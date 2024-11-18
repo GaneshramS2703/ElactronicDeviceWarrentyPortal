@@ -22,3 +22,14 @@ def get_claims_for_product(serial_number):
                                Key('SK').begins_with("CLAIM")
     )
     return response['Items']
+
+
+def delete_product_dynamodb(user_id, serial_number):
+    """Delete a product from DynamoDB."""
+    try:
+        table.delete_item(
+            Key={'PK': f"USER#{user_id}", 'SK': f"PRODUCT#{serial_number}"}
+        )
+        print(f"Deleted product: {serial_number}")
+    except Exception as e:
+        print(f"Error deleting product: {e}")
