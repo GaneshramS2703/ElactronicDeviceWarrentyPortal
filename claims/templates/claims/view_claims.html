@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Claims for Product</title>
+</head>
+<body>
+    <h1>Claims for Product: {{ product.serial_number }}</h1>
+    <ul>
+        {% for claim in claims %}
+        <li>
+            <p><strong>Claim Date:</strong> {{ claim.ClaimDate }}</p>
+            <p><strong>Status:</strong> {{ claim.Status }}</p>
+            <p><strong>Description:</strong> {{ claim.Description }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'create_claim' product.serial_number %}">File a New Claim</a>
+</body>
+</html>

@@ -1,56 +1,56 @@
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse, HttpResponseRedirect
+from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 from .models import Product
-from .dynamodb_helpers import get_product, get_claims_for_product, delete_product_dynamodb
-from .s3_helpers import upload_document, get_document_url
 
-@csrf_exempt
+@login_required
 def create_product(request):
+    """Handles the creation of a new product."""
     if request.method == 'POST':
         try:
-            product = Product(
+            product = Product.objects.create(
                 user=request.user,
                 serial_number=request.POST.get('serial_number'),
+                product_name=request.POST.get('product_name'),
                 purchase_date=request.POST.get('purchase_date'),
                 warranty_period=request.POST.get('warranty_period'),
-                product_name=request.POST.get('product_name'),
-                description=request.POST.get('description')
+                description=request.POST.get('description', ''),
             )
             product.save()
-            return JsonResponse({'status': 'Product created successfully'})
+            return HttpResponseRedirect(reverse('list_products'))
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return render(request, 'registrations/create_product.html', {'error': str(e)})
 
-@csrf_exempt
+    return render(request, 'registrations/create_product.html')
+
+
+@login_required
 def view_product(request, serial_number):
-    product = get_product(request.user.id, serial_number)
-    if product:
-        return JsonResponse(product)
-    return JsonResponse({'error': 'Product not found'}, status=404)
+    """Displays details of a specific product."""
+    product = get_object_or_404(Product, serial_number=serial_number, user=request.user)
+    return render(request, 'registrations/view_product.html', {'product': product})
 
-@csrf_exempt
+
+@login_required
+def list_products(request):
+    """Lists all products registered by the logged-in user."""
+    products = Product.objects.filter(user=request.user)
+    return render(request, 'registrations/list_products.html', {'products': products})
+
+
+@login_required
+def delete_product_confirmation(request, serial_number):
+    """Displays a confirmation page before deleting a product."""
+    product = get_object_or_404(Product, serial_number=serial_number, user=request.user)
+    return render(request, 'registrations/delete_product_confirmation.html', {'product': product})
+
+
+@login_required
 def delete_product(request, serial_number):
-    product = get_product(request.user.id, serial_number)
-    if product:
-        delete_product_dynamodb(request.user.id, serial_number)
-        return JsonResponse({'status': 'Product deleted successfully'})
-    return JsonResponse({'error': 'Product not found'}, status=404)
-
-@csrf_exempt
-def upload_receipt(request):
-    if request.method == 'POST' and 'receipt' in request.FILES:
-        try:
-            file = request.FILES['receipt']
-            user_id = request.user.id
-            serial_number = request.POST.get('serial_number')
-            object_key = f"{user_id}/{serial_number}/{file.name}"
-
-            # Upload the file to S3
-            upload_document(file, 'warranty-documents', object_key)
-
-            # Generate a presigned URL
-            download_url = get_document_url('warranty-documents', object_key)
-            return JsonResponse({'status': 'Document uploaded successfully', 'url': download_url})
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    return JsonResponse({'error': 'Invalid request'}, status=400)
+    """Handles deletion of a specific product."""
+    product = get_object_or_404(Product, serial_number=serial_number, user=request.user)
+    if request.method == 'POST':
+        product.delete()
+        return HttpResponseRedirect(reverse('list_products'))
+    return render(request, 'registrations/delete_product_confirmation.html', {'product': product})

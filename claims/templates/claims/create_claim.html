@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File a Claim</title>
+</head>
+<body>
+    <h1>File a New Claim</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="description">Description:</label>
+        <textarea name="description" id="description" required></textarea><br>
+        <button type="submit">Submit Claim</button>
+    </form>
+</body>
+</html>

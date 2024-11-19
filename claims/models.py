@@ -1,11 +1,12 @@
 import boto3
 from django.db import models
 from registrations.models import Product
+from botocore.exceptions import ClientError
 from datetime import datetime
 
-# Initialize DynamoDB table resource
+# Initialize DynamoDB
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
-table = dynamodb.Table('ProductWarrantyTable')
+claims_table = dynamodb.Table('ClaimsTable')
 
 class Claim(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -26,5 +27,12 @@ class Claim(models.Model):
             'Description': self.description,
             'ClaimDate': self.claim_date.strftime('%Y-%m-%d %H:%M:%S'),
         }
-        table.put_item(Item=item)
-        super().save(*args, **kwargs)  # Optionally save in Django's database
+        try:
+            claims_table.put_item(Item=item)
+            print(f"Claim for product {self.product.serial_number} saved to DynamoDB.")
+        except ClientError as e:
+            print(f"Error saving claim to DynamoDB: {e}")
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Claim for {self.product.serial_number} ({self.status})"

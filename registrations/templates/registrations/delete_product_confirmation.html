@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirm Product Deletion</title>
+</head>
+<body>
+    <h1>Are you sure you want to delete the product?</h1>
+    <p>Product Name: {{ product.product_name }}</p>
+    <p>Serial Number: {{ product.serial_number }}</p>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit">Yes, Delete</button>
+        <a href="{% url 'view_product' product.serial_number %}">Cancel</a>
+    </form>
+</body>
+</html>

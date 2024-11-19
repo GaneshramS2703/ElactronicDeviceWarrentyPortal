@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Claims</title>
+</head>
+<body>
+    <h1>Your Claims</h1>
+    <ul>
+        {% for claim in claims %}
+        <li>
+            Claim for Product: {{ claim.product_serial }}
+            Status: {{ claim.status }}
+            Description: {{ claim.description }}
+        </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'create_claim' %}">File New Claim</a>
+</body>
+</html>

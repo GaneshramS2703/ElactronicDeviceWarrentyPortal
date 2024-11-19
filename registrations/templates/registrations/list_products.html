@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Products</title>
+</head>
+<body>
+    <h1>Your Registered Products</h1>
+    <ul>
+        {% for product in products %}
+        <li>
+            <a href="{% url 'view_product' product.serial_number %}">{{ product.product_name }}</a>
+            ({{ product.serial_number }}) - {{ product.purchase_date }}
+        </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'create_product' %}">Register New Product</a>
+</body>
+</html>
