@@ -84,12 +84,19 @@ def save_product(user_id, serial_number, product_name, purchase_date, warranty_p
 
 def get_user_products(user_id):
     """Retrieve all products for a user."""
-    response = table.query(
-        KeyConditionExpression=Key('PK').eq(f"USER#{user_id}") &
-                               Key('SK').begins_with("PRODUCT")
-    )
-    print(f"Debug: Fetched products for USER#{user_id}: {response}")
-    return response.get('Items', [])
+    try:
+        response = table.query(
+            KeyConditionExpression=Key('PK').eq(f"USER#{user_id}") & Key('SK').begins_with("PRODUCT")
+        )
+        products = response['Items']
+        # Debug to ensure FileKey is included
+        for product in products:
+            print(f"Debug: Retrieved product with FileKey: {product.get('FileKey')}")
+        return products
+    except Exception as e:
+        print(f"Error retrieving products: {e}")
+        return []
+
 
 def put_item(PK, SK, description, status):
     """Save a claim to DynamoDB."""

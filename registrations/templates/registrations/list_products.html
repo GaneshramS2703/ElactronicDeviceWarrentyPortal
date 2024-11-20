@@ -6,6 +6,9 @@
 <body>
     <h1>Your Registered Products</h1>
 
+    <!-- Load Custom Filters -->
+    {% load custom_filters %}
+
     <!-- Display success or error messages -->
     {% if messages %}
         <ul>
@@ -26,9 +29,24 @@
                     (Serial: {{ product.SK|slice:"8:" }})<br>
                     Purchase Date: {{ product.PurchaseDate }}<br>
                     Warranty Period: {{ product.WarrantyPeriod }} months<br>
-                    <!-- File a Claim link -->
+
+                    <!-- Warranty Status -->
+                    {% if product.is_under_warranty %}
+                        <span style="color: green;">Under Warranty</span><br>
+                        Remaining Warranty: {{ product.remaining_days }} days<br>
+                    {% else %}
+                        <span style="color: red;">Warranty Expired</span><br>
+                    {% endif %}
+
+                    <!-- View Document Link -->
+                    {% if product.FileKey %}
+                        <a href="{{ product.FileKey|generate_presigned_url_filter }}">View Document</a>
+                    {% endif %}
+                    
+                    <!-- File a Claim -->
                     <a href="{% url 'create_claim' product.SK|slice:'8:' %}">File a Claim</a>
-                    <!-- Delete link -->
+                    
+                    <!-- Delete Product -->
                     <a href="{% url 'delete_product' product.SK|slice:'8:' %}">Delete Product</a>
                 </li>
             {% endfor %}

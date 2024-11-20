@@ -3,7 +3,7 @@ from botocore.exceptions import ClientError
 
 # Initialize the S3 client
 s3 = boto3.client('s3', region_name='us-east-1')
-BUCKET_NAME = 'your-s3-bucket-name'  # Replace with your bucket name
+BUCKET_NAME = 'warranty-documents-electronicdevices'  # Replace with your bucket name
 
 def upload_file(file, object_key):
     """Upload a file to the S3 bucket."""
@@ -12,7 +12,6 @@ def upload_file(file, object_key):
             Fileobj=file,
             Bucket=BUCKET_NAME,
             Key=object_key,
-            ExtraArgs={'ACL': 'public-read'}  # Make the file publicly accessible
         )
         return f"https://{BUCKET_NAME}.s3.amazonaws.com/{object_key}"
     except ClientError as e:

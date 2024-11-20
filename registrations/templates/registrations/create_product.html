@@ -16,7 +16,7 @@
     {% endif %}
 
     <!-- Product Registration Form -->
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data"> <!-- Added enctype for file upload -->
         {% csrf_token %}
         <label for="serial_number">Serial Number:</label>
         <input type="text" name="serial_number" id="serial_number" required><br>
@@ -29,6 +29,9 @@
 
         <label for="warranty_period">Warranty Period (Months):</label>
         <input type="number" name="warranty_period" id="warranty_period" required><br>
+
+        <label for="document">Upload Warranty Document:</label> <!-- New file input -->
+        <input type="file" name="document" id="document" required><br>
 
         <button type="submit">Register</button>
     </form>
