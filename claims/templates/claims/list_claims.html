@@ -5,15 +5,37 @@
 </head>
 <body>
     <h1>Your Claims</h1>
-    <ul>
-        {% for claim in claims %}
-        <li>
-            Claim for Product: {{ claim.product_serial }}
-            Status: {{ claim.status }}
-            Description: {{ claim.description }}
-        </li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'create_claim' %}">File New Claim</a>
+
+    <!-- Home Page Button -->
+    <p>
+        <a href="{% url 'home' %}" style="text-decoration: none; padding: 8px 12px; background-color: #4CAF50; color: white; border-radius: 5px;">
+            Back to Home
+        </a>
+    </p>
+
+    <!-- Success/Error Messages -->
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li style="color: green;">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <!-- Claims List -->
+    {% if claims %}
+        <ul>
+            {% for claim in claims %}
+                <li>
+                    Claim for <strong>{{ claim.product_name }}</strong> (Serial: {{ claim.product_serial }})<br>
+                    Description: {{ claim.Description }}<br>
+                    Status: {{ claim.Status }}<br>
+                    <a href="{% url 'delete_claim' claim.SK|slice:'6:' %}?serial_number={{ claim.product_serial }}">Delete Claim</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No claims found. <a href="{% url 'list_user_products' %}">File a claim for your products</a></p>
+    {% endif %}
 </body>
 </html>

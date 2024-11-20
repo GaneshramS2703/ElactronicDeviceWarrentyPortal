@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>File a Claim</title>
+    <title>File a New Claim</title>
 </head>
 <body>
     <h1>File a New Claim</h1>
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li style="color: green;">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
     <form method="POST">
         {% csrf_token %}
         <label for="description">Description:</label>
         <textarea name="description" id="description" required></textarea><br>
         <button type="submit">Submit Claim</button>
     </form>
+    <p><a href="{% url 'list_user_claims' %}">Back to Claims List</a></p>
 </body>
 </html>

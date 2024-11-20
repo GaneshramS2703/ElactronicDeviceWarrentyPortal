@@ -10,12 +10,15 @@ SECRET_KEY = 'django-insecure-^e49yxh0^)n447h1%x$86d!3!*v=mf^7o=atbkqdbf&ja2bhj+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["3032a64f3919479dbd3e9de8324cfecd.vfs.cloud9.us-east-1.amazonaws.com"]
+# Allowed hosts for deployment
+ALLOWED_HOSTS = [
+    "3032a64f3919479dbd3e9de8324cfecd.vfs.cloud9.us-east-1.amazonaws.com"
+]
 
 # Application definition
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
+    'django.contrib.admin',  # Admin site
+    'django.contrib.auth',  # Authentication
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -57,15 +60,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'warranty_portal.wsgi.application'
 
-# Database configuration (SQLite for development)
-DATABASES = {
+# Database Configuration
+# No relational database is being used; DynamoDB will serve as the primary database.
+DATABASES =  {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
-# Password validation
+# Disable migrations for Django models
+class DisableMigrations:
+    def __contains__(self, item):
+        return True
+
+    def __getitem__(self, item):
+        return None
+
+MIGRATION_MODULES = DisableMigrations()
+
+# Password validation (Django’s auth system still requires this)
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -96,4 +110,43 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # AWS Configuration
-AWS_REGION = os.getenv('AWS_REGION', 'us-east-1')  # Default region
+AWS_REGION = 'us-east-1'
+DYNAMODB_TABLE_NAME = 'ProductWarrantyTable'  # DynamoDB table name
+S3_BUCKET_NAME = 'warranty-documents-electronicdevices'  # S3 bucket name
+
+# Logging (for debugging DynamoDB and S3 interactions)
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'boto3': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'botocore': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+    },
+}
+
+# Sessions and Authentication (Use DynamoDB for Sessions if needed)
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'  # Consider DynamoDB session integration later
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://3032a64f3919479dbd3e9de8324cfecd.vfs.cloud9.us-east-1.amazonaws.com'
+]
+
+
+LOGIN_REDIRECT_URL = '/'  # Redirect to the home page after login
+
+LOGIN_URL = '/accounts/login/'  # Redirect unauthenticated users to the login page

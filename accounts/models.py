@@ -12,5 +12,12 @@ class UserProfile(models.Model):
     )
     address = models.TextField(blank=True, null=True)
 
+    class Meta:
+        verbose_name = "User Profile"
+        verbose_name_plural = "User Profiles"
+
     def __str__(self):
         return f"{self.user.username}'s Profile"
+
+    def get_full_address(self):
+        return f"{self.address} ({self.phone_number})" if self.phone_number else self.address

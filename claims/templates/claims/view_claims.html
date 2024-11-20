@@ -1,19 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>View Claims for Product</title>
+    <title>Claims for {{ product.product_name }}</title>
 </head>
 <body>
-    <h1>Claims for Product: {{ product.serial_number }}</h1>
-    <ul>
-        {% for claim in claims %}
-        <li>
-            <p><strong>Claim Date:</strong> {{ claim.ClaimDate }}</p>
-            <p><strong>Status:</strong> {{ claim.Status }}</p>
-            <p><strong>Description:</strong> {{ claim.Description }}</p>
-        </li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'create_claim' product.serial_number %}">File a New Claim</a>
+    <h1>Claims for {{ product.product_name }}</h1>
+
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if claims %}
+        <ul>
+            {% for claim in claims %}
+                <li>
+                    Claim ID: {{ claim.SK|slice:"6:" }}<br>
+                    Description: {{ claim.description }}<br>
+                    Status: {{ claim.status }}<br>
+                    <a href="{% url 'delete_claim' claim.SK|slice:'6:' %}">Delete Claim</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No claims found for this product.</p>
+    {% endif %}
+    <p><a href="{% url 'list_user_claims' %}">Back to All Claims</a></p>
 </body>
 </html>

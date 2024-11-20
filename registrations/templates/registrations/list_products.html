@@ -1,18 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Your Products</title>
+    <title>Your Registered Products</title>
 </head>
 <body>
     <h1>Your Registered Products</h1>
-    <ul>
-        {% for product in products %}
-        <li>
-            <a href="{% url 'view_product' product.serial_number %}">{{ product.product_name }}</a>
-            ({{ product.serial_number }}) - {{ product.purchase_date }}
-        </li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'create_product' %}">Register New Product</a>
+
+    <!-- Display success or error messages -->
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li style="color: green;">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <!-- Link to register a new product -->
+    <p><a href="{% url 'create_product' %}">Register New Product</a></p>
+
+    {% if products %}
+        <ul>
+            {% for product in products %}
+                <li>
+                    <strong>{{ product.ProductName }}</strong> 
+                    (Serial: {{ product.SK|slice:"8:" }})<br>
+                    Purchase Date: {{ product.PurchaseDate }}<br>
+                    Warranty Period: {{ product.WarrantyPeriod }} months<br>
+                    <!-- File a Claim link -->
+                    <a href="{% url 'create_claim' product.SK|slice:'8:' %}">File a Claim</a>
+                    <!-- Delete link -->
+                    <a href="{% url 'delete_product' product.SK|slice:'8:' %}">Delete Product</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No products registered. <a href="{% url 'create_product' %}">Register New Product</a></p>
+    {% endif %}
 </body>
 </html>

@@ -2,7 +2,6 @@ import boto3
 from django.db import models
 from registrations.models import Product
 from botocore.exceptions import ClientError
-from datetime import datetime
 
 # Initialize DynamoDB
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -33,6 +32,3 @@ class Claim(models.Model):
         except ClientError as e:
             print(f"Error saving claim to DynamoDB: {e}")
         super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"Claim for {self.product.serial_number} ({self.status})"

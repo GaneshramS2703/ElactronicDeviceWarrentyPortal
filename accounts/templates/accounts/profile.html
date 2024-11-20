@@ -4,9 +4,37 @@
     <title>Profile</title>
 </head>
 <body>
-    <h1>Welcome, {{ profile.user.username }}!</h1>
-    <p>Phone: {{ profile.phone_number }}</p>
-    <p>Address: {{ profile.address }}</p>
-    <a href="{% url 'logout' %}">Logout</a>
+    <!-- Navigation Bar -->
+    <nav>
+        <a href="/">Home</a> | <!-- Link to the home page -->
+        <a href="{% url 'profile_view' %}">Profile</a> | <!-- Active profile link -->
+        <a href="{% url 'logout' %}">Logout</a> <!-- Logout link -->
+    </nav>
+
+    <h1>Your Profile</h1>
+
+    <!-- Display messages -->
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li style="color: green;">{{ message }}</li> <!-- Messages styled in green -->
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <!-- Profile Update Form -->
+    <form method="post">
+        {% csrf_token %}
+        <label for="phone_number">Phone Number:</label>
+        <input type="text" id="phone_number" name="phone_number" value="{{ profile.phone_number }}" required><br>
+
+        <label for="address">Address:</label>
+        <textarea id="address" name="address" rows="4" cols="50">{{ profile.address }}</textarea><br>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <!-- Navigation Link to Home -->
+    <p><a href="/">Go to Home</a></p> <!-- Added link back to the home page -->
 </body>
 </html>
