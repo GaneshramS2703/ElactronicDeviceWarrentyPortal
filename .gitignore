@@ -1,0 +1,4 @@
+# Ignore Lambda deployment package
+claim_processor.zip
+awscliv2.zip
+

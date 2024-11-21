@@ -17,6 +17,7 @@ from warranty_lib.warranty import WarrantyValidator, WarrantyCoverageCalculator
 
 
 
+
 @login_required
 def create_product(request):
     """Handles the creation of a new product with document upload."""

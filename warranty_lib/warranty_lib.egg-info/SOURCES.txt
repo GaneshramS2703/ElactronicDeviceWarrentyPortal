@@ -1,0 +1,12 @@
+LICENSE
+README.md
+pyproject.toml
+setup.cfg
+setup.py
+tests/test_warranty.py
+warranty_lib/__init__.py
+warranty_lib/warranty.py
+warranty_lib.egg-info/PKG-INFO
+warranty_lib.egg-info/SOURCES.txt
+warranty_lib.egg-info/dependency_links.txt
+warranty_lib.egg-info/top_level.txt
