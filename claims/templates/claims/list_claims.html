@@ -27,10 +27,16 @@
         <ul>
             {% for claim in claims %}
                 <li>
-                    Claim for <strong>{{ claim.product_name }}</strong> (Serial: {{ claim.product_serial }})<br>
-                    Description: {{ claim.Description }}<br>
-                    Status: {{ claim.Status }}<br>
-                    <a href="{% url 'delete_claim' claim.SK|slice:'6:' %}?serial_number={{ claim.product_serial }}">Delete Claim</a>
+                    <strong>Claim for {{ claim.product_name }}</strong> 
+                    (Serial: {{ claim.product_serial }})<br>
+                    <strong>Description:</strong> {{ claim.description }}<br>
+                    <strong>Status:</strong> {{ claim.status }}<br>
+                    
+                    <!-- Delete Claim Link -->
+                    <a href="{% url 'delete_claim' claim.claim_id %}?serial_number={{ claim.product_serial }}"
+                       style="color: red; text-decoration: none;">
+                        Delete Claim
+                    </a>
                 </li>
             {% endfor %}
         </ul>

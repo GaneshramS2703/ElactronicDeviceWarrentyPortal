@@ -33,7 +33,8 @@ def get_claims_for_product(serial_number):
         )
         return response['Items']
     except Exception as e:
-        print(f"Error retrieving claims: {e}")
+        print(f"Debug: Retrieved claims: {response['Items']}")
+
         return []
 
 def delete_product_dynamodb(user_id, serial_number):
@@ -104,10 +105,12 @@ def put_item(PK, SK, description, status):
         Item={
             'PK': PK,
             'SK': SK,
-            'Description': description,
-            'Status': status
+            'Description': description,  # Note case-sensitive 'Description'
+            'Status': status  # Note case-sensitive 'Status'
         }
     )
+
+
 
 
 

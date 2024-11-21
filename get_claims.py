@@ -27,4 +27,4 @@ def get_claims_for_serial(serial_number):
         print(f"Error fetching claims: {e}")
 
 # Replace with the actual serial number of the product
-get_claims_for_serial('1234')
+get_claims_for_serial('444')

@@ -10,21 +10,30 @@ from helpers.dynamodb_helpers import delete_item
 def list_user_claims(request):
     """Displays all claims for the logged-in user's products."""
     try:
+        # Retrieve products for the logged-in user
         products = get_user_products(user_id=request.user.id)
         all_claims = []
 
+        # Iterate through each product and retrieve its claims
         for product in products:
             claims = get_claims_for_product(product['SK'][8:])  # Extract serial number
             for claim in claims:
+                # Ensure keys are accessed with correct case-sensitive names
                 all_claims.append({
-                    'product_serial': product['SK'][8:],
+                    'product_serial': product['SK'][8:],  # Remove "PRODUCT#" prefix
                     'product_name': product['ProductName'],
-                    **claim
+                    'claim_id': claim['SK'].split('#')[1],  # Extract claim ID
+                    'description': claim.get('Description', 'No description provided'),
+                    'status': claim.get('status', 'pending'),  # Default to 'Pending' if not set
                 })
 
+        # Render the claims list page with the retrieved claims
         return render(request, 'claims/list_claims.html', {'claims': all_claims, 'products': products})
     except Exception as e:
+        # Handle any exceptions and render the error
         return render(request, 'claims/list_claims.html', {'error': str(e)})
+
+
 
 @login_required
 def create_claim(request, serial_number):
