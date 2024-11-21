@@ -99,14 +99,15 @@ def get_user_products(user_id):
         return []
 
 
-def put_item(PK, SK, description, status):
+def put_item(PK, SK, description, status, user_email):
     """Save a claim to DynamoDB."""
     table.put_item(
         Item={
             'PK': PK,
             'SK': SK,
             'Description': description,  # Note case-sensitive 'Description'
-            'Status': status  # Note case-sensitive 'Status'
+            'Status': status,  # Note case-sensitive 'Status'
+            'user_email': user_email
         }
     )
 

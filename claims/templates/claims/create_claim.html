@@ -16,6 +16,8 @@
         {% csrf_token %}
         <label for="description">Description:</label>
         <textarea name="description" id="description" required></textarea><br>
+         <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required><br><br>
         <button type="submit">Submit Claim</button>
     </form>
     <p><a href="{% url 'list_user_claims' %}">Back to Claims List</a></p>

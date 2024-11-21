@@ -40,8 +40,14 @@ def create_claim(request, serial_number):
     """Handles the creation of a new claim for a specific product."""
     if request.method == 'POST':
         description = request.POST.get('description', '').strip()
+        email = request.POST.get('email', '').strip()
+
+        # Validate inputs
         if not description:
             messages.error(request, "Description is required.")
+            return redirect('create_claim', serial_number=serial_number)
+        if not email:
+            messages.error(request, "Email is required.")
             return redirect('create_claim', serial_number=serial_number)
 
         try:
@@ -53,7 +59,8 @@ def create_claim(request, serial_number):
                 PK=f"PRODUCT#{serial_number}",
                 SK=f"CLAIM#{claim_id}",
                 description=description,
-                status='Pending'
+                status='Pending',
+                user_email=email  # Add email to the claim
             )
 
             # Success message and redirect
@@ -65,7 +72,6 @@ def create_claim(request, serial_number):
             return redirect('create_claim', serial_number=serial_number)
 
     return render(request, 'claims/create_claim.html', {'serial_number': serial_number})
-
 
 @login_required
 def delete_claim(request, claim_id):
