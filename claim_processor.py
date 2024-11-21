@@ -1,12 +1,12 @@
 import boto3
 
-# Initialize AWS Services
+# Initialize SQS and DynamoDB
+sqs = boto3.client('sqs')
 dynamodb = boto3.resource('dynamodb')
-sns = boto3.client('sns')
 table = dynamodb.Table('ProductWarrantyTable')
 
-# Replace with your SNS topic ARN
-SNS_TOPIC_ARN = "arn:aws:sns:us-east-1:454329490259:ClaimStatusNotification"
+# SQS Queue URL
+SQS_QUEUE_URL = "https://sqs.us-east-1.amazonaws.com/454329490259/ClaimStatusQueue"
 
 def lambda_handler(event, context):
     for record in event['Records']:
@@ -39,18 +39,20 @@ def lambda_handler(event, context):
                 )
                 print(f"Updated claim {claim_id} with status {status}")
 
-                # Publish notification to SNS
-                message = (
-                    f"Your claim (ID: {claim_id}) for product (Serial: {serial_number}) has been updated to: {status}."
+                # Send the claim notification to SQS
+                message_body = {
+                    "serial_number": serial_number,
+                    "claim_id": claim_id,
+                    "status": status,
+                    "user_email": user_email
+                }
+                sqs.send_message(
+                    QueueUrl=SQS_QUEUE_URL,
+                    MessageBody=str(message_body)
                 )
-                sns.publish(
-                    TopicArn=SNS_TOPIC_ARN,
-                    Message=message,
-                    Subject="Claim Status Update"
-                )
-                print(f"Notification sent for claim {claim_id}")
+                print(f"Claim {claim_id} message sent to SQS.")
 
             except Exception as e:
-                print(f"Error processing claim {claim_id}: {e}")
+                print(f"Failed to update claim {claim_id}: {e}")
 
-    return {"statusCode": 200, "body": "Claims processed and notifications sent"}
+    return {"statusCode": 200, "body": "Claims processed and sent to SQS"}
