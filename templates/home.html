@@ -1,17 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Welcome to the Warranty Portal</title>
-</head>
-<body>
-    <nav>
-        <a href="{% url 'logout' %}">Logout</a> <!-- Logout button -->
-    </nav>
+{% extends "base.html" %}
 
-    <h1>Welcome to the Warranty Portal</h1>
+{% block title %}Welcome to the Warranty Portal{% endblock %}
 
-    <p><a href="{% url 'list_products' %}">View Your Products</a></p>
-    <p><a href="{% url 'list_user_claims' %}">View Your Claims</a></p>
-    <p><a href="{% url 'profile_view' %}">Manage Your Profile</a></p>
-</body>
-</html>
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Welcome to the Warranty Portal</h1>
+
+    <div class="mt-4 text-center">
+        <a href="{% url 'list_products' %}" class="btn btn-primary btn-lg m-2">View Your Products</a>
+        <a href="{% url 'list_user_claims' %}" class="btn btn-success btn-lg m-2">View Your Claims</a>
+        <a href="{% url 'profile_view' %}" class="btn btn-secondary btn-lg m-2">Manage Your Profile</a>
+    </div>
+</div>
+{% endblock %}

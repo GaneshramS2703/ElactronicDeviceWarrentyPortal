@@ -1,33 +1,27 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Claims for {{ product.product_name }}</title>
-</head>
-<body>
-    <h1>Claims for {{ product.product_name }}</h1>
-
+{% extends "base.html" %}
+{% block title %}View Claims{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Claims for {{ product.product_name }}</h1>
     {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
+    <div class="alert alert-success">{{ messages|join:', ' }}</div>
     {% endif %}
-
     {% if claims %}
-        <ul>
-            {% for claim in claims %}
-                <li>
-                    Claim ID: {{ claim.SK|slice:"6:" }}<br>
-                    Description: {{ claim.description }}<br>
-                    Status: {{ claim.status }}<br>
-                    <a href="{% url 'delete_claim' claim.SK|slice:'6:' %}">Delete Claim</a>
-                </li>
-            {% endfor %}
-        </ul>
+    <ul class="list-group">
+        {% for claim in claims %}
+        <li class="list-group-item">
+            <strong>Claim ID:</strong> {{ claim.SK|slice:"6:" }}<br>
+            <strong>Description:</strong> {{ claim.description }}<br>
+            <strong>Status:</strong> {{ claim.status }}<br>
+            <a href="{% url 'claims:delete_claim' claim.SK|slice:'6:' %}" class="btn btn-danger btn-sm mt-2">Delete Claim</a>
+        </li>
+        {% endfor %}
+    </ul>
     {% else %}
-        <p>No claims found for this product.</p>
+    <p>No claims found for this product.</p>
     {% endif %}
-    <p><a href="{% url 'list_user_claims' %}">Back to All Claims</a></p>
-</body>
-</html>
+    <div class="mt-4">
+        <a href="{% url 'claims:list_user_claims' %}" class="btn btn-secondary">Back to All Claims</a>
+    </div>
+</div>
+{% endblock %}

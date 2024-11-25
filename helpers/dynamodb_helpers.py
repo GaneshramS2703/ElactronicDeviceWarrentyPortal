@@ -113,22 +113,26 @@ def put_item(PK, SK, description, status, user_email):
 
 
 
-
-
-
 def delete_item(PK, SK):
-    """Delete an item from DynamoDB based on its primary and sort keys."""
+    """Delete an item from DynamoDB."""
     try:
+        print(f"Debug: Attempting to delete item with PK={PK} and SK={SK}")
         response = table.delete_item(
             Key={
                 'PK': PK,
                 'SK': SK
-            }
+            },
+            ReturnValues='ALL_OLD'
         )
-        print(f"Debug: Deleted item with PK={PK}, SK={SK}, Response: {response}")
-    except ClientError as e:
-        print(f"Error deleting item: {e}")
+        if 'Attributes' in response:
+            print("Debug: Item deleted successfully.")
+        else:
+            print("Debug: Item not found for deletion.")
+    except Exception as e:
+        print(f"Debug: Error deleting item - {e}")
         raise
+
+
 
 def save_product_with_file(user_id, serial_number, product_name, purchase_date, warranty_period, file_key):
     """Save a product to DynamoDB with an associated file."""
@@ -142,3 +146,11 @@ def save_product_with_file(user_id, serial_number, product_name, purchase_date, 
             'FileKey': file_key  # Save the S3 file key
         }
     )
+
+def get_claim_by_id(claim_id):
+    """Fetch a claim by its ID from DynamoDB."""
+    # Adjust query logic to filter by claim_id
+    response = table.query(
+        KeyConditionExpression=Key('SK').eq(f"CLAIM#{claim_id}")
+    )
+    return response.get('Items', [])[0] if response.get('Items') else None

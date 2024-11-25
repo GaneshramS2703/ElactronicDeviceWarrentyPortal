@@ -1,19 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Delete Product</title>
-</head>
-<body>
-    <h1>Delete Product</h1>
-    {% if product %}
-        <p>Are you sure you want to delete the product <strong>{{ product.ProductName }}</strong> with Serial Number <strong>{{ product.SK|slice:"8:" }}</strong>?</p>
-        <form method="POST">
-            {% csrf_token %}
-            <button type="submit">Yes, Delete</button>
-            <a href="{% url 'list_products' %}">Cancel</a>
-        </form>
-    {% else %}
-        <p>Product not found.</p>
-    {% endif %}
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Delete Product{% endblock %}
+{% block content %}
+<h1>Delete Product</h1>
+{% if product %}
+    <p>Are you sure you want to delete the product <strong>{{ product.ProductName }}</strong> with Serial Number <strong>{{ product.SK|slice:"8:" }}</strong>?</p>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit">Yes, Delete</button>
+        <a href="{% url 'list_products' %}">Cancel</a>
+    </form>
+{% else %}
+    <p>Product not found.</p>
+{% endif %}
+{% endblock %}

@@ -5,6 +5,13 @@ from helpers.dynamodb_helpers import get_claims_for_product, put_item, delete_it
 from registrations.models import Product
 from uuid import uuid4
 from helpers.dynamodb_helpers import delete_item
+import boto3
+from boto3.dynamodb.conditions import Attr
+
+
+# Initialize DynamoDB
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+table = dynamodb.Table('ProductWarrantyTable')
 
 @login_required
 def list_user_claims(request):
@@ -31,6 +38,7 @@ def list_user_claims(request):
         return render(request, 'claims/list_claims.html', {'claims': all_claims, 'products': products})
     except Exception as e:
         # Handle any exceptions and render the error
+        print(f"Debug: Error listing claims - {e}")
         return render(request, 'claims/list_claims.html', {'error': str(e)})
 
 
@@ -72,24 +80,45 @@ def create_claim(request, serial_number):
             return redirect('create_claim', serial_number=serial_number)
 
     return render(request, 'claims/create_claim.html', {'serial_number': serial_number})
-
 @login_required
 def delete_claim(request, claim_id):
-    """Delete a specific claim."""
-    try:
-        serial_number = request.GET.get('serial_number')
-        if not serial_number:
-            raise ValueError("Serial number is required to delete a claim.")
+    """Delete a specific claim using only the claim_id."""
+    if request.method == 'POST':
+        try:
+            print(f"Debug: Received delete request for claim_id={claim_id}")
 
-        PK = f"PRODUCT#{serial_number}"
-        SK = f"CLAIM#{claim_id}"
+            # Construct the Sort Key (SK) for the claim
+            SK = f"CLAIM#{claim_id}"
+            print(f"Debug: Looking for claim with SK={SK}")
 
-        delete_item(PK=PK, SK=SK)
-        messages.success(request, "Claim deleted successfully.")
-    except Exception as e:
-        messages.error(request, f"An error occurred: {str(e)}")
+            # Query DynamoDB for the claim
+            response = table.scan(
+                FilterExpression=Attr('SK').eq(SK)
+            )
+            if not response.get('Items'):
+                print("Debug: Claim not found in DynamoDB")
+                raise ValueError("Claim not found.")
+
+            # Extract the Primary Key (PK) of the associated product
+            PK = response['Items'][0]['PK']
+
+            # Delete the claim
+            delete_item(PK=PK, SK=SK)
+            print(f"Debug: Claim with claim_id={claim_id} deleted successfully.")
+            messages.success(request, "Claim deleted successfully.")
+        except Exception as e:
+            print(f"Debug: Error occurred - {e}")
+            messages.error(request, f"An error occurred: {e}")
+    else:
+        print("Debug: Redirecting GET request to list_user_claims")
+        return redirect('list_user_claims')
 
     return redirect('list_user_claims')
+
+
+
+
+
 
 @login_required
 def view_claims(request, serial_number):

@@ -1,47 +1,39 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Your Claims</title>
-</head>
-<body>
-    <h1>Your Claims</h1>
-
-    <!-- Home Page Button -->
-    <p>
-        <a href="{% url 'home' %}" style="text-decoration: none; padding: 8px 12px; background-color: #4CAF50; color: white; border-radius: 5px;">
-            Back to Home
-        </a>
-    </p>
-
-    <!-- Success/Error Messages -->
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li style="color: green;">{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-    <!-- Claims List -->
-    {% if claims %}
-        <ul>
-            {% for claim in claims %}
-                <li>
-                    <strong>Claim for {{ claim.product_name }}</strong> 
-                    (Serial: {{ claim.product_serial }})<br>
-                    <strong>Description:</strong> {{ claim.description }}<br>
-                    <strong>Status:</strong> {{ claim.status }}<br>
-                    
-                    <!-- Delete Claim Link -->
-                    <a href="{% url 'delete_claim' claim.claim_id %}?serial_number={{ claim.product_serial }}"
-                       style="color: red; text-decoration: none;">
-                        Delete Claim
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No claims found. <a href="{% url 'list_user_products' %}">File a claim for your products</a></p>
-    {% endif %}
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}Your Claims{% endblock %}
+{% block content %}
+<h1 class="text-center mb-4">Your Claims</h1>
+{% if messages %}
+<div class="alert alert-success">{{ messages|join:', ' }}</div>
+{% endif %}
+{% if claims %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Serial</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for claim in claims %}
+        <tr>
+            <td>{{ claim.product_name }}</td>
+            <td>{{ claim.product_serial }}</td>
+            <td>{{ claim.description }}</td>
+            <td>{{ claim.status }}</td>
+            <td>
+                <form method="POST" action="{% url 'delete_claim' claim.claim_id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No claims found. <a href="{% url 'list_user_products' %}">File a claim for your products</a></p>
+{% endif %}
+{% endblock %}

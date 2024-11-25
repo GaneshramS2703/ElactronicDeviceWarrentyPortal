@@ -1,14 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Product Details</title>
-</head>
-<body>
-    <h1>{{ product.product_name }}</h1>
-    <p>Serial Number: {{ product.serial_number }}</p>
-    <p>Purchase Date: {{ product.purchase_date }}</p>
-    <p>Warranty Period: {{ product.warranty_period }} months</p>
-    <p>Description: {{ product.description }}</p>
-    <a href="{% url 'delete_product' product.serial_number %}">Delete Product</a>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Product Details{% endblock %}
+{% block content %}
+<h1>{{ product.product_name }}</h1>
+<p>Serial Number: {{ product.serial_number }}</p>
+<p>Purchase Date: {{ product.purchase_date }}</p>
+<p>Warranty Period: {{ product.warranty_period }} months</p>
+<p>Description: {{ product.description }}</p>
+<a href="{% url 'delete_product' product.serial_number %}">Delete Product</a>
+{% endblock %}

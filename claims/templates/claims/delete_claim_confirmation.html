@@ -1,16 +1,17 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Confirm Claim Deletion</title>
-</head>
-<body>
-    <h1>Are you sure you want to delete this claim?</h1>
-    <p>Product Serial Number: {{ claim.product.serial_number }}</p>
+{% extends "base.html" %}
+{% block title %}Delete Claim Confirmation{% endblock %}
+{% block content %}
+<h1>Are you sure you want to delete this claim?</h1>
+{% if claim %}
+    <p>Product Serial Number: {{ claim.product_serial }}</p>
     <p>Claim Description: {{ claim.description }}</p>
-    <form method="POST">
+    <form method="POST" action="{% url 'delete_claim' claim.claim_id %}">
         {% csrf_token %}
-        <button type="submit">Yes, Delete</button>
-        <a href="{% url 'view_claims' claim.product.serial_number %}">Cancel</a>
+        <input type="hidden" name="serial_number" value="{{ claim.product_serial }}">
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
     </form>
-</body>
-</html>
+    <a href="{% url 'view_claims' claim.product_serial %}" class="btn btn-secondary">Cancel</a>
+{% else %}
+    <p class="text-danger">Error: Claim not found.</p>
+{% endif %}
+{% endblock %}

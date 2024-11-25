@@ -1,58 +1,45 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Your Registered Products</title>
-</head>
-<body>
-    <h1>Your Registered Products</h1>
+{% extends "base.html" %}
+{% load custom_filters %}
+{% block title %}Your Registered Products{% endblock %}
+{% block content %}
+<h1>Your Registered Products</h1>
 
-    <!-- Load Custom Filters -->
-    {% load custom_filters %}
+{% if messages %}
+    <ul>
+        {% for message in messages %}
+            <li style="color: green;">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
 
-    <!-- Display success or error messages -->
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li style="color: green;">{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+<p><a href="{% url 'create_product' %}">Register New Product</a></p>
 
-    <!-- Link to register a new product -->
-    <p><a href="{% url 'create_product' %}">Register New Product</a></p>
+{% if products %}
+    <ul>
+        {% for product in products %}
+            <li>
+                <strong>{{ product.ProductName }}</strong> 
+                (Serial: {{ product.SK|slice:"8:" }})<br>
+                Purchase Date: {{ product.PurchaseDate }}<br>
+                Warranty Period: {{ product.WarrantyPeriod }} months<br>
 
-    {% if products %}
-        <ul>
-            {% for product in products %}
-                <li>
-                    <strong>{{ product.ProductName }}</strong> 
-                    (Serial: {{ product.SK|slice:"8:" }})<br>
-                    Purchase Date: {{ product.PurchaseDate }}<br>
-                    Warranty Period: {{ product.WarrantyPeriod }} months<br>
+                {% if product.is_under_warranty %}
+                    <span style="color: green;">Under Warranty</span><br>
+                    Remaining Warranty: {{ product.remaining_days }} days<br>
+                {% else %}
+                    <span style="color: red;">Warranty Expired</span><br>
+                {% endif %}
 
-                    <!-- Warranty Status -->
-                    {% if product.is_under_warranty %}
-                        <span style="color: green;">Under Warranty</span><br>
-                        Remaining Warranty: {{ product.remaining_days }} days<br>
-                    {% else %}
-                        <span style="color: red;">Warranty Expired</span><br>
-                    {% endif %}
-
-                    <!-- View Document Link -->
-                    {% if product.FileKey %}
-                        <a href="{{ product.FileKey|generate_presigned_url_filter }}">View Document</a>
-                    {% endif %}
-                    
-                    <!-- File a Claim -->
-                    <a href="{% url 'create_claim' product.SK|slice:'8:' %}">File a Claim</a>
-                    
-                    <!-- Delete Product -->
-                    <a href="{% url 'delete_product' product.SK|slice:'8:' %}">Delete Product</a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No products registered. <a href="{% url 'create_product' %}">Register New Product</a></p>
-    {% endif %}
-</body>
-</html>
+                {% if product.FileKey %}
+                    <a href="{{ product.FileKey|generate_presigned_url_filter }}">View Document</a>
+                {% endif %}
+                
+                <a href="{% url 'create_claim' product.SK|slice:'8:' %}">File a Claim</a>
+                <a href="{% url 'delete_product' product.SK|slice:'8:' %}">Delete Product</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No products registered. <a href="{% url 'create_product' %}">Register New Product</a></p>
+{% endif %}
+{% endblock %}

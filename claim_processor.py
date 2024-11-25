@@ -1,4 +1,5 @@
 import boto3
+import json
 
 # Initialize SQS and DynamoDB
 sqs = boto3.client('sqs')
@@ -48,7 +49,7 @@ def lambda_handler(event, context):
                 }
                 sqs.send_message(
                     QueueUrl=SQS_QUEUE_URL,
-                    MessageBody=str(message_body)
+                    MessageBody=json.dumps(message_body)
                 )
                 print(f"Claim {claim_id} message sent to SQS.")
 
