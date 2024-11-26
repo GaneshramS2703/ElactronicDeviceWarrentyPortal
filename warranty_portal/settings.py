@@ -8,11 +8,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-^e49yxh0^)n447h1%x$86d!3!*v=mf^7o=atbkqdbf&ja2bhj+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False  # Set to False for production
 
 # Allowed hosts for deployment
 ALLOWED_HOSTS = [
-    "3032a64f3919479dbd3e9de8324cfecd.vfs.cloud9.us-east-1.amazonaws.com"
+    "ElectronicDeviceWarrantyPortal-env.eba-hmz7c4md.us-east-1.elasticbeanstalk.com",
+    "3032a64f3919479dbd3e9de8324cfecd.vfs.cloud9.us-east-1.amazonaws.com",
+    "localhost"
 ]
 
 # Application definition
@@ -61,38 +63,35 @@ TEMPLATES = [
 WSGI_APPLICATION = 'warranty_portal.wsgi.application'
 
 # Database Configuration
-# No relational database is being used; DynamoDB will serve as the primary database.
-DATABASES =  {
+DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.sqlite3',  # Default SQLite database for development
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
-# Disable migrations for Django models
-class DisableMigrations:
-    def __contains__(self, item):
-        return True
+# MIGRATION_MODULES: Only disable migrations for apps using DynamoDB if needed.
+MIGRATION_MODULES = {
+    # Keep default migrations for core Django apps
+    'admin': None,
+    'auth': None,
+    'contenttypes': None,
+    'sessions': None,
+    'messages': None,
+    # Disable for DynamoDB apps if explicitly required
+    # Remove the lines below if migrations are required
+    # 'accounts': 'migrations_disabled',
+    # 'registrations': 'migrations_disabled',
+    # 'claims': 'migrations_disabled',
+}
 
-    def __getitem__(self, item):
-        return None
 
-MIGRATION_MODULES = DisableMigrations()
-
-# Password validation (Django’s auth system still requires this)
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 # Internationalization
@@ -101,7 +100,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files configuration
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
@@ -114,7 +113,7 @@ AWS_REGION = 'us-east-1'
 DYNAMODB_TABLE_NAME = 'ProductWarrantyTable'  # DynamoDB table name
 S3_BUCKET_NAME = 'warranty-documents-electronicdevices'  # S3 bucket name
 
-# Logging (for debugging DynamoDB and S3 interactions)
+# Logging Configuration
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -124,29 +123,22 @@ LOGGING = {
         },
     },
     'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-        },
-        'boto3': {
-            'handlers': ['console'],
-            'level': 'INFO',
-        },
-        'botocore': {
-            'handlers': ['console'],
-            'level': 'INFO',
-        },
+        'django': {'handlers': ['console'], 'level': 'INFO'},
+        'boto3': {'handlers': ['console'], 'level': 'INFO'},
+        'botocore': {'handlers': ['console'], 'level': 'INFO'},
     },
 }
 
-# Sessions and Authentication (Use DynamoDB for Sessions if needed)
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'  # Consider DynamoDB session integration later
-
+# CSRF and Authentication
 CSRF_TRUSTED_ORIGINS = [
-    'https://3032a64f3919479dbd3e9de8324cfecd.vfs.cloud9.us-east-1.amazonaws.com'
+    'https://3032a64f3919479dbd3e9de8324cfecd.vfs.cloud9.us-east-1.amazonaws.com',
 ]
 
+LOGIN_REDIRECT_URL = '/'  # Redirect to home page after login
+LOGIN_URL = '/accounts/login/'  # Redirect unauthenticated users to login page
 
-LOGIN_REDIRECT_URL = '/'  # Redirect to the home page after login
+# Sessions (optional: Use Django’s default DB-backed session engine)
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
-LOGIN_URL = '/accounts/login/'  # Redirect unauthenticated users to the login page
+# Collectstatic configuration
+COLLECTSTATIC_STRICT = True

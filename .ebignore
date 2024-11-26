@@ -1,0 +1,17 @@
+# Ignore virtual environments
+venv/
+.venv/
+
+# Ignore system files
+*.pyc
+__pycache__/
+.DS_Store
+
+# Ignore git and other version control folders
+.git/
+.gitignore
+
+# Ignore local environment files
+*.log
+env/
+
