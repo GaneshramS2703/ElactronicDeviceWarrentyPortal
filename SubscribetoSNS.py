@@ -1,4 +1,4 @@
-import boto3  # Missing import added
+import boto3  
 
 def subscribe_user_to_sns(email):
     """
@@ -6,7 +6,7 @@ def subscribe_user_to_sns(email):
     """
     sns_client = boto3.client('sns')
 
-    # Your SNS Topic ARN
+    # My SNS Topic ARN
     sns_topic_arn = "arn:aws:sns:us-east-1:454329490259:ClaimStatusNotification"
 
     try:

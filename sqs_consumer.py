@@ -9,7 +9,7 @@ def lambda_handler(event, context):
 
     for record in event['Records']:
         try:
-            # Parse the SQS message
+            # Parsing the SQS message
             message_body = record['body']
             print(f"Raw message body: {message_body}")  # Log raw message
             message = json.loads(message_body)  # Attempt to parse JSON

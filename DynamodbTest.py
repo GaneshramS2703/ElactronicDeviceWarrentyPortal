@@ -5,7 +5,8 @@ def list_items():
     table = dynamodb.Table('ProductWarrantyTable')
 
     response = table.scan()  # Fetch all items
-    items = response.get('Items', [])
+    items = response.get('Items', []) # Retrieve the list of items, default to an empty list if none.
+    print("Items in Table:")
     print("Items in Table:")
     for item in items:
         print(item)

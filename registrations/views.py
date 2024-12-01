@@ -22,20 +22,23 @@ from urllib.parse import unquote
 
 @login_required
 def create_product(request):
-    """Handles the creation of a new product with document upload."""
+    # Extract product details from the form
     if request.method == 'POST':
         serial_number = request.POST.get('serial_number').strip()
         product_name = request.POST.get('product_name').strip()
         purchase_date = request.POST.get('purchase_date').strip()
         warranty_period = request.POST.get('warranty_period').strip()
-        document = request.FILES.get('document')  # File input
-
+        document = request.FILES.get('document')  # File upload
+        
+      # Validate form inputs
+      
         if not serial_number or not product_name or not purchase_date or not warranty_period or not document:
             messages.error(request, "All fields including the document are required.")
             return redirect('create_product')
 
         try:
             # Upload file to S3
+            
             file_key = f"warranty-documents/{serial_number}/{document.name}"
             file_url = upload_file(document, file_key)
 
@@ -60,7 +63,9 @@ def create_product(request):
     
 @login_required
 def view_product(request, serial_number):
-    """Displays details of a specific product."""
+    
+    # Fetch the product from the database using the serial number
+    
     product = get_object_or_404(Product, serial_number=serial_number, user=request.user)
     return render(request, 'registrations/view_product.html', {'product': product})
 
@@ -71,12 +76,12 @@ def list_products(request):
         # Fetch products for the logged-in user
         products = get_user_products(user_id=request.user.id)
 
-        # Enhance products with warranty info
+        # # Add warranty information to each product
         for product in products:
             purchase_date = product.get("PurchaseDate")
             warranty_period = int(product.get("WarrantyPeriod", 0))
 
-            # Use the WarrantyValidator and WarrantyCoverageCalculator
+            # Use the WarrantyValidator and WarrantyCoverageCalculator from library
             validator = WarrantyValidator(purchase_date, warranty_period)
             calculator = WarrantyCoverageCalculator(purchase_date, warranty_period)
 
@@ -91,7 +96,7 @@ def list_products(request):
 
 @login_required
 def delete_product(request, serial_number):
-    """Directly deletes a product without confirmation."""
+    
     try:
         # Delete the product using the helper function
         delete_product_dynamodb(user_id=request.user.id, serial_number=serial_number)
@@ -105,7 +110,7 @@ def delete_product(request, serial_number):
     
 @login_required
 def delete_product_confirmation(request, serial_number):
-    """Displays a confirmation page before deleting a product."""
+    # Fetch the product details for confirmation
     from helpers.dynamodb_helpers import get_product
     print(f"Debug: Trying to fetch product USER#{request.user.id}, PRODUCT#{serial_number}")
     product = get_product(user_id=request.user.id, serial_number=serial_number)
@@ -117,7 +122,7 @@ def delete_product_confirmation(request, serial_number):
     return render(request, 'registrations/delete_product_confirmation.html', {'product': product})
     
     def get_user_products(user_id):
-        """Fetch all products for a user from DynamoDB."""
+        # Query DynamoDB for all products associated with the user
         try:
             response = table.query(
             KeyConditionExpression=Key('PK').eq(f"USER#{user_id}") &

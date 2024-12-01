@@ -13,7 +13,7 @@ def normalize_status_field():
             new_status = item['Status']
             print(f"Normalizing status for {item['SK']}")
 
-            # Use ExpressionAttributeNames to alias the reserved keyword
+            # Using ExpressionAttributeNames to alias the reserved keyword
             table.update_item(
                 Key={
                     'PK': item['PK'],

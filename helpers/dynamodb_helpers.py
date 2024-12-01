@@ -7,8 +7,9 @@ from botocore.exceptions import ClientError
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('ProductWarrantyTable')
 
+#Retrieve a product from DynamoDB by user ID and serial number.
 def get_product(user_id, serial_number):
-    """Retrieve a product from DynamoDB by user ID and serial number."""
+    
     try:
         response = table.get_item(
             Key={
@@ -23,9 +24,9 @@ def get_product(user_id, serial_number):
         return None
 
 
-
+#Retrieve all claims for a given product.
 def get_claims_for_product(serial_number):
-    """Retrieve all claims for a given product."""
+   
     try:
         response = table.query(
             KeyConditionExpression=Key('PK').eq(f"PRODUCT#{serial_number}") &
@@ -36,9 +37,10 @@ def get_claims_for_product(serial_number):
         print(f"Debug: Retrieved claims: {response['Items']}")
 
         return []
-
+        
+#Delete a product from DynamoDB.
 def delete_product_dynamodb(user_id, serial_number):
-    """Delete a product from DynamoDB."""
+    
     try:
         table.delete_item(
             Key={
@@ -52,7 +54,7 @@ def delete_product_dynamodb(user_id, serial_number):
         raise
 
 
-
+#Retrieve a generic item from DynamoDB by primary and sort keys.
 def get_item(pk, sk):
     """Retrieve a generic item from DynamoDB by PK and SK."""
     try:
@@ -62,17 +64,9 @@ def get_item(pk, sk):
         print(f"Error retrieving item: {e}")
         return None
 
-        
+#Save a new product to DynamoDB.        
 def save_product(user_id, serial_number, product_name, purchase_date, warranty_period):
-    """
-    Save a new product to DynamoDB.
-    Args:
-        user_id (str): The ID of the user.
-        serial_number (str): The serial number of the product.
-        product_name (str): The name of the product.
-        purchase_date (str): The date of purchase.
-        warranty_period (int): The warranty period in months.
-    """
+    
     table.put_item(
         Item={
             'PK': f"USER#{user_id}",
@@ -82,9 +76,10 @@ def save_product(user_id, serial_number, product_name, purchase_date, warranty_p
             'WarrantyPeriod': warranty_period
         }
     )
-
+    
+#Retrieve all products for a user.
 def get_user_products(user_id):
-    """Retrieve all products for a user."""
+    
     try:
         response = table.query(
             KeyConditionExpression=Key('PK').eq(f"USER#{user_id}") & Key('SK').begins_with("PRODUCT")
@@ -98,9 +93,9 @@ def get_user_products(user_id):
         print(f"Error retrieving products: {e}")
         return []
 
-
+#Save a claim to DynamoDB."""
 def put_item(PK, SK, description, status, user_email):
-    """Save a claim to DynamoDB."""
+    
     table.put_item(
         Item={
             'PK': PK,
@@ -111,10 +106,9 @@ def put_item(PK, SK, description, status, user_email):
         }
     )
 
-
-
+#Delete an item from DynamoDB by primary and sort keys
 def delete_item(PK, SK):
-    """Delete an item from DynamoDB."""
+
     try:
         print(f"Debug: Attempting to delete item with PK={PK} and SK={SK}")
         response = table.delete_item(
@@ -133,9 +127,9 @@ def delete_item(PK, SK):
         raise
 
 
-
+#Save a product to DynamoDB with an associated S3 file key.
 def save_product_with_file(user_id, serial_number, product_name, purchase_date, warranty_period, file_key):
-    """Save a product to DynamoDB with an associated file."""
+    
     table.put_item(
         Item={
             'PK': f"USER#{user_id}",
@@ -146,7 +140,8 @@ def save_product_with_file(user_id, serial_number, product_name, purchase_date, 
             'FileKey': file_key  # Save the S3 file key
         }
     )
-
+    
+#Fetch a specific claim by its ID from DynamoDB.
 def get_claim_by_id(claim_id):
     """Fetch a claim by its ID from DynamoDB."""
     # Adjust query logic to filter by claim_id

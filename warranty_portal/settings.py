@@ -7,15 +7,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-^e49yxh0^)n447h1%x$86d!3!*v=mf^7o=atbkqdbf&ja2bhj+'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False  # Set to False for production
 
 # Allowed hosts for deployment
 ALLOWED_HOSTS = [
-    "ElectronicDeviceWarrantyPortal-env.eba-hmz7c4md.us-east-1.elasticbeanstalk.com",
+    "127.0.0.1",
     "3032a64f3919479dbd3e9de8324cfecd.vfs.cloud9.us-east-1.amazonaws.com",
-    "localhost"
+    "warrantyandproductregistration-env.eba-bmrq3mke.us-east-1.elasticbeanstalk.com", #domain name
+    "localhost",
+    ".us-east-1.elb.amazonaws.com", # Elastic Load Balancer in us-east-1
+    "172.31.83.118" #local Ip
 ]
+
 
 # Application definition
 INSTALLED_APPS = [
@@ -70,7 +73,7 @@ DATABASES = {
     }
 }
 
-# MIGRATION_MODULES: Only disable migrations for apps using DynamoDB if needed.
+
 MIGRATION_MODULES = {
     # Keep default migrations for core Django apps
     'admin': None,
@@ -78,11 +81,7 @@ MIGRATION_MODULES = {
     'contenttypes': None,
     'sessions': None,
     'messages': None,
-    # Disable for DynamoDB apps if explicitly required
-    # Remove the lines below if migrations are required
-    # 'accounts': 'migrations_disabled',
-    # 'registrations': 'migrations_disabled',
-    # 'claims': 'migrations_disabled',
+    
 }
 
 

@@ -13,9 +13,10 @@ from boto3.dynamodb.conditions import Attr
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('ProductWarrantyTable')
 
+ #Displays all claims for the logged-in user's products.
 @login_required
 def list_user_claims(request):
-    """Displays all claims for the logged-in user's products."""
+   
     try:
         # Retrieve products for the logged-in user
         products = get_user_products(user_id=request.user.id)
@@ -42,10 +43,10 @@ def list_user_claims(request):
         return render(request, 'claims/list_claims.html', {'error': str(e)})
 
 
-
+#Handles the creation of a new claim for a specific product."""
 @login_required
 def create_claim(request, serial_number):
-    """Handles the creation of a new claim for a specific product."""
+   
     if request.method == 'POST':
         description = request.POST.get('description', '').strip()
         email = request.POST.get('email', '').strip()
@@ -80,9 +81,11 @@ def create_claim(request, serial_number):
             return redirect('create_claim', serial_number=serial_number)
 
     return render(request, 'claims/create_claim.html', {'serial_number': serial_number})
+    
+#Delete a specific claim using only the claim_id.    
 @login_required
 def delete_claim(request, claim_id):
-    """Delete a specific claim using only the claim_id."""
+    
     if request.method == 'POST':
         try:
             print(f"Debug: Received delete request for claim_id={claim_id}")
@@ -119,10 +122,10 @@ def delete_claim(request, claim_id):
 
 
 
-
+ #Displays all claims for a specific product.
 @login_required
 def view_claims(request, serial_number):
-    """Displays all claims for a specific product."""
+   
     try:
         product = get_object_or_404(Product, serial_number=serial_number, user=request.user)
         claims = get_claims_for_product(serial_number)
